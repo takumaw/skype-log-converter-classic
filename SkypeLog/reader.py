@@ -274,9 +274,9 @@ class Reader:
 
             # append to chats
             if not chats.has_key(_key):
-                chats[_key] = Chat()
-                chats[_key].set_skypeid(my_skypeid)
-                chats[_key].set_dispname(my_dispname)
+                chats[_key] = Chat(skypeid=my_skypeid,
+                                   dispname=my_dispname,
+                                   participants=_participants)
             chats[_key].messages.append(msg)
 
         chats_splitted = []

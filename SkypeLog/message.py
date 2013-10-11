@@ -54,16 +54,23 @@ class Message:
         self.m = m
 
 class Chat:
-    def __init__(self, messages=None, skypeid="", dispname=u""):
+    def __init__(self, messages=None, skypeid="", dispname=u"", participants=None):
         self.messages = messages if messages else []
         self.skypeid = skypeid
         self.dispname = dispname
+        if participants:
+            self.participants = list(participants)
+        else:
+            self.participants = list()
 
     def set_skypeid(self, skypeid):
         self.skypeid = skypeid
 
     def set_dispname(self, dispname):
         self.dispname = dispname
+    
+    def set_participants(self, participants):
+        self.participants = participants
 
     def split(self):
         _splitted = []
@@ -83,7 +90,9 @@ class Chat:
                 not _is_call_on_progress):
 
                 _splitted.append(Chat(messages=_chat,
-                                skypeid=self.skypeid, dispname=self.dispname))
+                                skypeid=self.skypeid,
+                                dispname=self.dispname,
+                                participants=self.participants))
                 _chat = []
 
             if m.msgtype == MSGTYPE_CALL_START:
@@ -94,6 +103,8 @@ class Chat:
             _chat.append(m)
         if len(_chat) > 0:
             _splitted.append(Chat(messages=_chat,
-                                skypeid=self.skypeid, dispname=self.dispname))
+                                skypeid=self.skypeid,
+                                dispname=self.dispname,
+                                participants=self.participants))
 
         return _splitted

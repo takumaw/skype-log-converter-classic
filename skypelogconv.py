@@ -6,6 +6,8 @@ import os
 import optparse
 import tempfile
 import logging
+import locale
+import string
 
 import SkypeLog
 
@@ -29,7 +31,8 @@ Examples:
     parser.add_option("-L", "--locale", dest="locale", default="en",
                 help="set locale to LOCALE", metavar="LOCALE")
     parser.add_option("-T", "--name-table", dest="nametable", default="",
-                help="load id-to-name table from NAMETABLE file", metavar="NAMETABLE")
+                help="load id-to-name table from NAMETABLE file",
+                metavar="NAMETABLE")
     parser.add_option("-N", "--no-write", dest="dry_run", action="store_true",
                 help="do not output files")
     parser.add_option("-v", "--verbose", dest="verbose", action="count",
@@ -57,6 +60,12 @@ Examples:
             _value = " ".join(ln_split[1:])
             nametable[_key] = _value
 
+    # skypeid filter
+    valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    filename_filter  = string.maketrans(
+        valid_filename_chars, ' ' * len(valid_filename_chars)
+    )
+
     # convert logs
     for f in args:
         reader = SkypeLog.Reader()
@@ -65,9 +74,22 @@ Examples:
         chats = reader.read()
         for c in chats:
             conv = SkypeLog.EmailConverter(chat=c, locale=options.locale)
+            participants = []
+            for p in c.participants:
+                p_ = str(p["skypeid"])
+                p_ = p_.translate(None, filename_filter)
+                participants.append(p_)
+            
+            chat_participants = ",".join(participants)
             if not options.dry_run:
-                output_file = tempfile.NamedTemporaryFile(dir=options.output_dir,
-                                prefix="skypelog-", suffix=".eml", delete=False)
+                pref_encoding = locale.getpreferredencoding()
+                output_dir = unicode(options.output_dir, pref_encoding)
+                output_dir = output_dir.encode("utf-8")
+                output_file_prefix = u"skypelog-%s-" % chat_participants
+                output_file_prefix = output_file_prefix.encode("utf-8")
+                output_file = tempfile.NamedTemporaryFile(dir=output_dir,
+                                prefix=output_file_prefix,
+                                suffix=".eml", delete=False)
                 conv.write(output_file)
                 output_file.close()
 
