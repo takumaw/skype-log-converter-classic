@@ -241,6 +241,22 @@ class Reader:
             elif _type == MSGTYPE_MSG:
                 # message
                 _message_body = self._body_xml_tree_enflat(_body_xml_tree)
+            elif _type == MSGTYPE_SENDCONTACT:
+                # send contact(s)
+                _message = u'%(author)s sent you contact(s)'
+                _message_formatdict = {'author': _dispname}
+                try:
+                    _contacts_to_be_sent = []
+                    _contacts = _body_xml_tree.findall(".//c")
+                    for _c in _contacts:
+                        _contacts_to_be_sent.append(u'<li>' + _c.attrib["f"] + u' (' + _c.attrib["s"] + u')' + u'</li>')
+                    _message_body = u'<ul>' + (u''.join(_contacts_to_be_sent)) + u'</ul>'
+                except:
+                    # UNCAUGHT MESSAGE; FIX THIS
+                    # raise RuntimeError('Invalid contact list of MSGTYPE_SHARECONTACT')
+                    logger.error('Invalid contact list of MSGTYPE_SHARECONTACT')
+                    self.debug_print_m(m)
+                    _message_body = u''
             elif _type == MSGTYPE_SENDFILE:
                 # send file(s)
                 _message = u'%(author)s sent you file(s)'

@@ -55,6 +55,8 @@ class LocaleDict:
             translated_text = u'%(author)s が %(identities)s と連絡先情報を共有しました' % formatdict
         elif text == u'Blocked contact':
             translated_text = u'ブロックした連絡先'
+        elif text == u'%(author)s sent you contact(s)':
+            translated_text = u'%(author)s が連絡先を送信しました' % formatdict
         elif text == u'%(author)s sent you file(s)':
             translated_text = u'%(author)s がファイルを送信しました' % formatdict
         elif text == u'%(author)s sent you a video message':
