@@ -366,6 +366,26 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
+            elif _type == MSGTYPE_MEDIA:
+                # send media(s)
+                _message = _(m.message, m.message_formatdict)
+                _message_body = m.message_body
+                chat_line = u'<table cellpadding="0" cellspacing="1">' + \
+                                u'<tbody>' + \
+                                u'<tr>' + \
+                                u'<td nowrap=""><span style="display:block;float:left;color:#888">' + _timestamp + u'&nbsp;</span></td>' + \
+                                u'<td style="font-size:1;width:10%"><hr noshade="" size="1" color="#cccccc"></td>' + \
+                                u'<td nowrap="" style="font-size:80%;color:#aaa">' + _message + u'</td>' + \
+                                u'<td style="font-size:1;width:90%"><hr noshade="" size="1" color="#cccccc"></td>' + \
+                                u'</tr>' + \
+                                u'<tr>' + \
+                                u'<td nowrap=""><span style="display:block;float:left;color:#888">&nbsp;&nbsp;</span></td>' + \
+                                u'<td style="font-size:80%;color:#aaa;width:100%;" colspan="3">' + \
+                                _message_body + \
+                                u'</td>' + \
+                                u'</tr>' + \
+                                u'</tbody>' + \
+                                u'</table>'
 
             chat_lines.append(chat_line)
             _last_type = _type

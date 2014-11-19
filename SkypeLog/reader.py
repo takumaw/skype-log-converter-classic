@@ -66,18 +66,6 @@ class Reader:
                 self.debug_print_m(m)
                 continue
 
-            # author
-            _skypeid = m["author"]
-            #_dispname = m["from_dispname"]
-            if not _skypeid:
-                # UNCAUGHT MESSAGE; FIX THIS
-                # raise RuntimeError('Invalid skypeid: %s' % (m["author"],))
-                logger.error('Invalid skypeid: %s' % (m["author"],))
-                self.debug_print_m(m)
-                continue
-            #if _dispname == None:
-            _dispname = self._id_to_dispname(_skypeid)
-
             # participants
             __participants = self._m_to_participants(m, my_skypeid)
             if __participants == None:
@@ -93,10 +81,8 @@ class Reader:
                 _p = {'skypeid': _p_skypeid, 'dispname': _p_dispname}
                 _participants.append(_p)
             if not _participants:
-                print m, m["author"]
-        
-            # key
-            _key = " ".join(__participants)
+                logger.error('None participants')
+                self.debug_print_m(m)
 
             # identities
             __identities = m["identities"]
@@ -118,7 +104,26 @@ class Reader:
                     logger.error('Invalid identities')
                     self.debug_print_m(m)
                     continue
-        
+            
+            # author
+            _skypeid = m["author"]
+            #_dispname = m["from_dispname"]
+            if not _skypeid:
+                # USE THE FIRST PATICIPANTS AS AN AUTHOR
+                _skypeid = _identities[0]["skypeid"]
+                _dispname = _identities[0]["dispname"]
+            else:
+                _dispname = self._id_to_dispname(_skypeid)
+            
+                # UNCAUGHT MESSAGE; FIX THIS
+                # raise RuntimeError('Invalid skypeid: %s' % (m["author"],))
+                #logger.error('Invalid skypeid: %s' % (m["author"],))
+                #self.debug_print_m(m)
+                #continue
+            
+            # key
+            _key = " ".join(__participants)
+            
             # body_xml
             if m["body_xml"] != None:
                 try:
@@ -204,6 +209,8 @@ class Reader:
                     _reason = u"Unable to connect"
                 elif m["reason"] == "internal_error":
                     _reason = u"Internal Error"
+                elif m["reason"] == "insufficient_funds":
+                    _reason = u"Insufficient Funds"
                 else:
                     _reason = u"Unknown" # FIX THIS
                     # UNCAUGHT MESSAGE; FIX THIS
@@ -282,6 +289,21 @@ class Reader:
                 _birthday = self._m_id_to_birthday(m, _skypeid)
                 _message = u"It's %(author)s's birthday on %(date)s"
                 _message_formatdict = {'author': _dispname, 'date': _birthday}
+            elif _type == MSGTYPE_MEDIA:
+                # send media(s)
+                _message = u'%(author)s sent you file(s)'
+                _message_formatdict = {'author': _dispname}
+                try:
+                    _text_node = _body_xml_tree.findall(".//Text")[0]
+                    _message_body = xml.etree.ElementTree.tostring(_text_node, encoding="utf-8", method="xml")
+                    _message_body = _message_body[len("<Text>"):-len("</Text>")]
+                except Exception as err:
+                    print err
+                    # UNCAUGHT MESSAGE; FIX THIS
+                    # raise RuntimeError('Invalid file list of MSGTYPE_SENDFILE')
+                    logger.error('Invalid message of MSGTYPE_MEDIA')
+                    self.debug_print_m(m)
+                    _message_body = u''
 
             # msg
             msg = Message(msgtype=_type, chatmsg_type=_chatmsg_type, timestamp=_timestamp,
@@ -507,4 +529,5 @@ class Reader:
                 err_msg[k] = u"%s" % (m[k],)
             except UnicodeDecodeError:
                 err_msg[k] = u"%s" % (base64.b16encode(m[k]),)
-        self._pp_.pprint(err_msg)
+        #self._pp_.pprint(err_msg)
+        logger.debug(self._pp_.pformat(err_msg))

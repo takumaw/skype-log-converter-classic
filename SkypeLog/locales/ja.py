@@ -46,6 +46,8 @@ class LocaleDict:
                 translated_formatdict["reason"] = u"接続出来ませんでした"
             elif translated_formatdict["reason"] == u"Internal Error":
                 translated_formatdict["reason"] = u"内部エラー"
+            elif translated_formatdict["reason"] == u"Insufficient Funds":
+                translated_formatdict["reason"] = u"残高不足"
             elif translated_formatdict["reason"] == u"Unknown":
                 translated_formatdict["reason"] = u"不明"
             translated_text = u'通話終了 - %(reason)s' % translated_formatdict
