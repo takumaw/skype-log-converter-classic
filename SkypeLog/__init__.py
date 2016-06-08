@@ -4,10 +4,10 @@ SkypeLog is a Skype Log utilities for Python.
 """
 __docformat__ = 'restructuredtext en'
 
-from .message import *
-from .reader import *
-from .converter import *
-from .locales import *
+from . import message
+from . import reader
+from . import converter
+from . import locales
 
 import logging
 

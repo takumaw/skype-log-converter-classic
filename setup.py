@@ -7,7 +7,7 @@ setup(name='SkypeLog',
       author='WATANABE Takuma',
       author_email='takumaw@sfo.kuramae.ne.jp',
       license='GPL v2',
-      packages=['SkypeLog'],
+      packages=['SkypeLog', 'SkypeLog/locales'],
       scripts=['bin/skypelogconv'],
       zip_safe=False)
 

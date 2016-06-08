@@ -2,6 +2,8 @@
 """Reader.
 """
 
+from . import message
+
 import sys
 import logging
 import pprint
@@ -10,8 +12,6 @@ import re
 import time
 import xml.etree.ElementTree
 import sqlite3
-
-from .message import *
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class Reader:
             # type
             _type = m["type"]
             _chatmsg_type = m["chatmsg_type"]
-            if _type not in MSG_TYPES:
+            if _type not in message.MSG_TYPES:
                 # UNCAUGHT MESSAGE; FIX THIS
                 # raise RuntimeError('Invalid message type: %s' % (m["type"],))
                 logger.error('Invalid message type: %s' % (m["type"],))
@@ -97,8 +97,8 @@ class Reader:
                     _identities.append(_i)
                 _identities_dispname = u", ".join([p['dispname'] for p in _identities])
             else:
-                if _type in [MSGTYPE_MEMBER_ADD, MSGTYPE_MEMBER_KICK,
-                            MSGTYPE_SETROLE, MSGTYPE_CONTACTINFO_ACK]:
+                if _type in [message.MSGTYPE_MEMBER_ADD, message.MSGTYPE_MEMBER_KICK,
+                            message.MSGTYPE_SETROLE, message.MSGTYPE_CONTACTINFO_ACK]:
                     # UNCAUGHT MESSAGE; FIX THIS
                     # raise RuntimeError('Invalid identities')
                     logger.error('Invalid identities')
@@ -144,7 +144,7 @@ class Reader:
             _message_formatdict = None
             _message_body = None
 
-            if _type == MSGTYPE_SETTOPIC:
+            if _type == message.MSGTYPE_SETTOPIC:
                 _body_xml_cleaned = self._body_xml_tree_enflat(_body_xml_tree)
                 # set topic
                 if _chatmsg_type == 5:
@@ -155,27 +155,27 @@ class Reader:
                     _message_formatdict = {'author': _dispname}
                 else:
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid _chatmsg_type of MSGTYPE_SETTOPIC: %s' % (m["_chatmsg_type"],))
-                    logger.error('Invalid _chatmsg_type of MSGTYPE_SETTOPIC: %s' % (m["_chatmsg_type"],))
+                    # raise RuntimeError('Invalid _chatmsg_type of message.MSGTYPE_SETTOPIC: %s' % (m["_chatmsg_type"],))
+                    logger.error('Invalid _chatmsg_type of message.MSGTYPE_SETTOPIC: %s' % (m["_chatmsg_type"],))
                     self.debug_print_m(m)
                     continue
-            elif _type == MSGTYPE_CREATEGROUPROOM:
+            elif _type == message.MSGTYPE_CREATEGROUPROOM:
                 # invoke a new group room (from this window)
                 _message = u'%(author)s created a group conversation'
                 _message_formatdict = {'author': _dispname}
-            elif _type == MSGTYPE_MEMBER_ADD:
+            elif _type == message.MSGTYPE_MEMBER_ADD:
                 # add new member(s)
                 _message = u'%(author)s added %(identities)s to this conversation'
                 _message_formatdict = {'author': _dispname, 'identities': _identities_dispname}
-            elif _type == MSGTYPE_MEMBER_KICK:
+            elif _type == message.MSGTYPE_MEMBER_KICK:
                 # kick a member
                 _message = u'%(author)s has ejected %(identities)s from this conversation'
                 _message_formatdict = {'author': _dispname, 'identities': _identities_dispname}
-            elif _type == MSGTYPE_MEMBER_LEAVE:
+            elif _type == message.MSGTYPE_MEMBER_LEAVE:
                 # a member has left
                 _message = u'%(author)s has left the conversation'
                 _message_formatdict = {'author': _dispname}
-            elif _type == MSGTYPE_SETROLE:
+            elif _type == message.MSGTYPE_SETROLE:
                 # set role
                 if m["param_value"] == 5:
                     _role = u"Spectator"
@@ -186,14 +186,14 @@ class Reader:
                 else:
                     _role = u"Unknown" # FIX THIS
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid param_value of MSGTYPE_SETROLE: %s' % (m["param_value"],))
-                    logger.error('Invalid param_value of MSGTYPE_SETROLE: %s' % (m["param_value"],))
+                    # raise RuntimeError('Invalid param_value of message.MSGTYPE_SETROLE: %s' % (m["param_value"],))
+                    logger.error('Invalid param_value of message.MSGTYPE_SETROLE: %s' % (m["param_value"],))
                     self.debug_print_m(m)
                 
                 _message = u'%(author)s set rank of %(identities)s to %(role)s'
                 _message_formatdict = {'author': _dispname, 'identities': _identities_dispname, 'role': _role}
-            elif _type == MSGTYPE_CALL_START or \
-                _type == MSGTYPE_CALL_END:
+            elif _type == message.MSGTYPE_CALL_START or \
+                _type == message.MSGTYPE_CALL_END:
                 # start call / end call
                 if not m["reason"]:
                     _reason = None
@@ -214,41 +214,41 @@ class Reader:
                 else:
                     _reason = u"Unknown" # FIX THIS
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid reason of MSGTYPE_CALL_*: %s' % (m["reason"],))
-                    logger.error('Invalid reason of MSGTYPE_CALL_*: %s' % (m["reason"],))
+                    # raise RuntimeError('Invalid reason of message.MSGTYPE_CALL_*: %s' % (m["reason"],))
+                    logger.error('Invalid reason of message.MSGTYPE_CALL_*: %s' % (m["reason"],))
                     self.debug_print_m(m)
                 
-                if _type == MSGTYPE_CALL_START:
+                if _type == message.MSGTYPE_CALL_START:
                     # call start
                     if _dispname:
                         _message = u'Call started by %(author)s'
                         _message_formatdict = {'author': _dispname}
                     else:
                         _message = u'Call started'
-                elif _type == MSGTYPE_CALL_END:
+                elif _type == message.MSGTYPE_CALL_END:
                     if _reason == None:
                         _message = u'Call ended'
                     else:
                         _message = u'Call ended - %(reason)s'
                         _message_formatdict = {'reason': _reason}
-            elif _type == MSGTYPE_CONTACTINFO_REQ:
+            elif _type == message.MSGTYPE_CONTACTINFO_REQ:
                 # require contact info
                 _message = u'Contact request'
                 _message_body = self._body_xml_tree_enflat(_body_xml_tree)
-            elif _type == MSGTYPE_CONTACTINFO_ACK:
+            elif _type == message.MSGTYPE_CONTACTINFO_ACK:
                 # share contact info
                 _message = u'%(author)s has shared contact details with %(identities)s.'
                 _message_formatdict = {'author': _dispname, 'identities': _identities_dispname}
-            elif _type == MSGTYPE_BLOCK:
+            elif _type == message.MSGTYPE_BLOCK:
                 # block a member
                 _message = u'Blocked contact'
-            elif _type == MSGTYPE_ME:
+            elif _type == message.MSGTYPE_ME:
                 # Skype command /me ...
                 _message_body = self._body_xml_tree_enflat(_body_xml_tree)
-            elif _type == MSGTYPE_MSG:
+            elif _type == message.MSGTYPE_MSG:
                 # message
                 _message_body = self._body_xml_tree_enflat(_body_xml_tree)
-            elif _type == MSGTYPE_SENDCONTACT:
+            elif _type == message.MSGTYPE_SENDCONTACT:
                 # send contact(s)
                 _message = u'%(author)s sent you contact(s)'
                 _message_formatdict = {'author': _dispname}
@@ -260,11 +260,11 @@ class Reader:
                     _message_body = u'<ul>' + (u''.join(_contacts_to_be_sent)) + u'</ul>'
                 except:
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid contact list of MSGTYPE_SHARECONTACT')
-                    logger.error('Invalid contact list of MSGTYPE_SHARECONTACT')
+                    # raise RuntimeError('Invalid contact list of message.MSGTYPE_SHARECONTACT')
+                    logger.error('Invalid contact list of message.MSGTYPE_SHARECONTACT')
                     self.debug_print_m(m)
                     _message_body = u''
-            elif _type == MSGTYPE_SENDFILE:
+            elif _type == message.MSGTYPE_SENDFILE:
                 # send file(s)
                 _message = u'%(author)s sent you file(s)'
                 _message_formatdict = {'author': _dispname}
@@ -276,43 +276,43 @@ class Reader:
                     _message_body = u'<ul>' + (u''.join(_files_to_be_sent)) + u'</ul>'
                 except:
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid file list of MSGTYPE_SENDFILE')
-                    logger.error('Invalid file list of MSGTYPE_SENDFILE')
+                    # raise RuntimeError('Invalid file list of message.MSGTYPE_SENDFILE')
+                    logger.error('Invalid file list of message.MSGTYPE_SENDFILE')
                     self.debug_print_m(m)
                     _message_body = u''
-            elif _type == MSGTYPE_VIDEOMSG:
+            elif _type == message.MSGTYPE_VIDEOMSG:
                 # video message
                 _message = u'%(author)s sent you a video message'
                 _message_formatdict = {'author': _dispname}
-            elif _type == MSGTYPE_BIRTHDAY:
+            elif _type == message.MSGTYPE_BIRTHDAY:
                 # birthday
                 _birthday = self._m_id_to_birthday(m, _skypeid)
                 _message = u"It's %(author)s's birthday on %(date)s"
                 _message_formatdict = {'author': _dispname, 'date': _birthday}
-            elif _type == MSGTYPE_MEDIA:
+            elif _type == message.MSGTYPE_MEDIA:
                 # send media(s)
                 _message = u'%(author)s sent you file(s)'
                 _message_formatdict = {'author': _dispname}
                 try:
                     _text_node = _body_xml_tree.findall(".//Text")[0]
                     _message_body = xml.etree.ElementTree.tostring(_text_node, encoding="utf-8", method="xml")
-                    _message_body = _message_body[len("<Text>"):-len("</Text>")]
+                    _message_body = _message_body[len("<Text>"):-len("</Text>")].decode("utf-8")
                 except Exception as err:
                     print err
                     # UNCAUGHT MESSAGE; FIX THIS
-                    # raise RuntimeError('Invalid file list of MSGTYPE_SENDFILE')
-                    logger.error('Invalid message of MSGTYPE_MEDIA')
+                    # raise RuntimeError('Invalid file list of message.MSGTYPE_SENDFILE')
+                    logger.error('Invalid message of message.MSGTYPE_MEDIA')
                     self.debug_print_m(m)
                     _message_body = u''
 
             # msg
-            msg = Message(msgtype=_type, chatmsg_type=_chatmsg_type, timestamp=_timestamp,
+            msg = message.Message(msgtype=_type, chatmsg_type=_chatmsg_type, timestamp=_timestamp,
                 skypeid=_skypeid, dispname=_dispname, participants=_participants,
                 message=_message, message_formatdict=_message_formatdict, message_body=_message_body)
 
             # append to chats
             if not chats.has_key(_key):
-                chats[_key] = Chat(skypeid=my_skypeid,
+                chats[_key] = message.Chat(skypeid=my_skypeid,
                                    dispname=my_dispname,
                                    participants=_participants)
             chats[_key].messages.append(msg)

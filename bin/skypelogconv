@@ -68,12 +68,12 @@ Examples:
 
     # convert logs
     for f in args:
-        reader = SkypeLog.Reader()
+        reader = SkypeLog.reader.Reader()
         reader.set_nametable(nametable)
         reader.load(f)
         chats = reader.read()
         for c in chats:
-            conv = SkypeLog.EmailConverter(chat=c, locale=options.locale)
+            conv = SkypeLog.converter.EmailConverter(chat=c, locale=options.locale)
             participants = []
             for p in c.participants:
                 p_ = str(p["skypeid"])

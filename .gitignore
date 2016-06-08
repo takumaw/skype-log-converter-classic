@@ -2,5 +2,9 @@
 *.pyo
 *.pyc
 .*.swp
+/build
+/dist
+/*.egg-info
+
 /excluded/*
 

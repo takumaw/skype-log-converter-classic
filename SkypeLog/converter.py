@@ -2,14 +2,14 @@
 """Converters.
 """
 
+from . import message
+from . import locales
+
 import time
 import email.header
 import email.utils
 import email.mime.multipart
 import email.mime.text
-
-from .message import *
-from .locales import *
 
 class Converter:
     def __init__(self, chat=None, locale="en"):
@@ -31,7 +31,7 @@ class Converter:
 class EmailConverter(Converter):
     def to_string(self, encoding="utf-8"):
         # locale
-        Loc = Locale()
+        Loc = locales.Locale()
         Loc.set_locale(self.locale)
         _ = Loc.get_text
 
@@ -90,7 +90,7 @@ class EmailConverter(Converter):
             _timestamp = unicode(time.strftime("%H:%M" , m.timestamp))
 
             # chat_body
-            if _type == MSGTYPE_SETTOPIC:
+            if _type == message.MSGTYPE_SETTOPIC:
                 # set topic
                 if _chatmsg_type == 5:
                     # set topic
@@ -122,7 +122,7 @@ class EmailConverter(Converter):
                                     u'</tr>' + \
                                     u'</tbody>' + \
                                     u'</table>'
-            elif _type == MSGTYPE_CREATEGROUPROOM:
+            elif _type == message.MSGTYPE_CREATEGROUPROOM:
                 # invoke a new group room (from this window)
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -137,7 +137,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_MEMBER_ADD:
+            elif _type == message.MSGTYPE_MEMBER_ADD:
                 # add new member(s)
                 # author invite identities
                 _message = _(m.message, m.message_formatdict)
@@ -153,7 +153,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_MEMBER_KICK:
+            elif _type == message.MSGTYPE_MEMBER_KICK:
                 # kick a member
                 # add new member(s)
                 # author invite identities
@@ -170,7 +170,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_SETROLE:
+            elif _type == message.MSGTYPE_SETROLE:
                 # set role
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -185,7 +185,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_CALL_START:
+            elif _type == message.MSGTYPE_CALL_START:
                 # start call
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -198,7 +198,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_CALL_END:
+            elif _type == message.MSGTYPE_CALL_END:
                 # end call
                 if m.message_formatdict:
                     _message = _(m.message, m.message_formatdict)
@@ -214,7 +214,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_CONTACTINFO_REQ:
+            elif _type == message.MSGTYPE_CONTACTINFO_REQ:
                 # require contact info
                 _message = _(m.message, m.message_formatdict)
                 _message_body = m.message_body
@@ -232,7 +232,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_CONTACTINFO_ACK:
+            elif _type == message.MSGTYPE_CONTACTINFO_ACK:
                 # share contact info
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -245,7 +245,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_BLOCK:
+            elif _type == message.MSGTYPE_BLOCK:
                 # block a member
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -260,7 +260,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_ME:
+            elif _type == message.MSGTYPE_ME:
                 # Skype command /me ...
                 _message_body = m.message_body
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -275,7 +275,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_MSG:
+            elif _type == message.MSGTYPE_MSG:
                 _message_body = m.message_body
             
                 # message
@@ -300,7 +300,7 @@ class EmailConverter(Converter):
                 # add message body end
                 chat_line += u'</span></span>'
                 chat_line += u'</div>'
-            elif _type == MSGTYPE_SENDCONTACT:
+            elif _type == message.MSGTYPE_SENDCONTACT:
                 # send contacts(s)
                 _message = _(m.message, m.message_formatdict)
                 _message_body = m.message_body
@@ -320,7 +320,7 @@ class EmailConverter(Converter):
                     u'</tr>' + \
                     u'</tbody>' + \
                     u'</table>'
-            elif _type == MSGTYPE_SENDFILE:
+            elif _type == message.MSGTYPE_SENDFILE:
                 # send file(s)
                 _message = _(m.message, m.message_formatdict)
                 _message_body = m.message_body
@@ -340,7 +340,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_VIDEOMSG:
+            elif _type == message.MSGTYPE_VIDEOMSG:
                 # video message
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -353,7 +353,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_BIRTHDAY:
+            elif _type == message.MSGTYPE_BIRTHDAY:
                 # birthday
                 _message = _(m.message, m.message_formatdict)
                 chat_line = u'<table cellpadding="0" cellspacing="1">' + \
@@ -366,7 +366,7 @@ class EmailConverter(Converter):
                                 u'</tr>' + \
                                 u'</tbody>' + \
                                 u'</table>'
-            elif _type == MSGTYPE_MEDIA:
+            elif _type == message.MSGTYPE_MEDIA:
                 # send media(s)
                 _message = _(m.message, m.message_formatdict)
                 _message_body = m.message_body
