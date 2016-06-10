@@ -1,9 +1,9 @@
-Skype Log Converter
-===================
+Skype Log Converter Classic
+===========================
 
 ©2013 WATANABE Takuma <takumaw@sfo.kuramae.ne.jp>
 
-Skype Log Converter is a utility that converts your Skype logs into clean, portable email files (.eml).
+Skype Log Converter Classic is a utility that converts your Skype logs into clean, portable email files (.eml).
 
 A converted email has a similar format of Google Talk history in Gmail.
 
@@ -15,8 +15,8 @@ Usage
 -----
 ### Help
 
-    $ ./skypelogconv.py --help
-    Usage: skypelogconv.py [options]
+    $ skypelogconvclassic --help
+    Usage: skypelogconvclassic [options]
     
     Options:
       -h, --help            show this help message and exit
@@ -32,7 +32,7 @@ Usage
 
 ### Example: Convert in English
 
-    $ ./skypelogconv.py -o ~/Documents/MyFolder \
+    $ skypelogconvclassic -o ~/Documents/MyFolder \
     ~/Library/Application\ Support/Skype/echo123/main.db
 
 `~/Documents/MyFolder` is an example output directory.
@@ -42,7 +42,7 @@ Replace `echo123` to your skypeid.
 
 ### Example: Convert in Japanese
 
-    $ ./skypelogconv.py -o ~/Documents/MyFolder -L ja \
+    $ skypelogconvclassic -o ~/Documents/MyFolder -L ja \
     ~/Library/Application\ Support/Skype/echo123/main.db
 
 Output should like:
@@ -56,7 +56,7 @@ Output email file has a filename `skypelog-<random name>.eml`.
 Restrictions
 ------------
 
-Skype Log Converter reads Skype main.db, which is actually a sqlite3 database file, and outputs each chatroom to emails.
+Skype Log Converter Classic reads Skype main.db, which is actually a sqlite3 database file, and outputs each chatroom to emails.
 
 Because Skype main.db specification is not opened,
 some types of unknown messages/actions cannot be converted.
@@ -89,14 +89,14 @@ e.g. convertion between skypeid and displayname may not work well.
 
 You can see what will be ignored by
 
-    ./skypelogconv --no-write -vv PATH_TO_MAIN_DB
+    skypelogconvclassic --no-write -vv PATH_TO_MAIN_DB
 
 Or simply
 
-    ./skypelogconv --debug PATH_TO_MAIN_DB
+    skypelogconvclassic --debug PATH_TO_MAIN_DB
 
 
 License
 -------
 
-This software is released under GPL v2 as provided in `GPL-3.0.txt`.
+This software is released under GPL v3 as provided in `GPL-3.0.txt`.
