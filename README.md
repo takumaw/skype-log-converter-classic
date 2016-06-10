@@ -11,6 +11,12 @@ You can upload converted emails to Gmail (through IMAP)
 using your favorite Mail app, and access from anywhere.
 
 
+Screenshots
+-----------
+
+![screenshot](https://github.com/takumaw/skype-log-converter-classic/raw/master/misc/screenshot.png)
+
+
 Usage
 -----
 ### Help
