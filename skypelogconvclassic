@@ -9,7 +9,7 @@ import logging
 import locale
 import string
 
-import SkypeLog
+import SkypeLogClassic
 
 def print_epilog(self, formatter):
     return self.epilog
@@ -17,7 +17,7 @@ def print_epilog(self, formatter):
 def main():
     # handling commandline arguments
     optparse.OptionParser.format_epilog = lambda self, formatter: self.epilog
-    
+
     usage = "usage: %prog [options] file [file ...]"
     epilog = """
 Examples:
@@ -40,17 +40,17 @@ Examples:
     parser.add_option("", "--debug", dest="debug", action="store_true",
                 help="debug mode, same as -vv -N")
     (options, args) = parser.parse_args()
-    
+
     # debug, verbose
     if options.debug:
         options.verbose = 2
         options.dry_run = True
-    
+
     if options.verbose == 1:
         logging.basicConfig()
     elif options.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
-    
+
     # load id2name table
     nametable = {}
     if options.nametable:
@@ -79,7 +79,7 @@ Examples:
                 p_ = str(p["skypeid"])
                 p_ = p_.translate(None, filename_filter)
                 participants.append(p_)
-            
+
             chat_participants = ",".join(participants)
             if not options.dry_run:
                 pref_encoding = locale.getpreferredencoding()

@@ -8,6 +8,5 @@ setup(name='SkypeLogClassic',
       author_email='takumaw@sfo.kuramae.ne.jp',
       license='GPL v3',
       packages=['SkypeLogClassic', 'SkypeLogClassic/locales'],
-      scripts=['bin/skypelogconvclassic'],
+      scripts=['skypelogconvclassic'],
       zip_safe=False)
-
