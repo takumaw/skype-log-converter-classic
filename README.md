@@ -12,7 +12,7 @@ via your favorite Mail app, to access from anywhere.
 Screenshots
 -----------
 
-![screenshot](./github/screenshot.png)
+![screenshot](./extra/screenshot.png)
 
 
 Usage

@@ -11,8 +11,10 @@ import string
 
 import SkypeLogClassic
 
+
 def print_epilog(self, formatter):
     return self.epilog
+
 
 def main():
     # handling commandline arguments
@@ -27,18 +29,18 @@ Examples:
 
     parser = optparse.OptionParser(usage=usage, epilog=epilog)
     parser.add_option("-o", "--output-dir", dest="output_dir", default=".",
-                help="write output to OUTPUT_DIR", metavar="OUTPUT_DIR")
+                      help="write output to OUTPUT_DIR", metavar="OUTPUT_DIR")
     parser.add_option("-L", "--locale", dest="locale", default="en",
-                help="set locale to LOCALE", metavar="LOCALE")
+                      help="set locale to LOCALE", metavar="LOCALE")
     parser.add_option("-T", "--name-table", dest="nametable", default="",
-                help="load id-to-name table from NAMETABLE file",
-                metavar="NAMETABLE")
+                      help="load id-to-name table from NAMETABLE file",
+                      metavar="NAMETABLE")
     parser.add_option("-N", "--no-write", dest="dry_run", action="store_true",
-                help="do not output files")
+                      help="do not output files")
     parser.add_option("-v", "--verbose", dest="verbose", action="count",
-                help="print verbose output")
+                      help="print verbose output")
     parser.add_option("", "--debug", dest="debug", action="store_true",
-                help="debug mode, same as -vv -N")
+                      help="debug mode, same as -vv -N")
     (options, args) = parser.parse_args()
 
     # debug, verbose
@@ -62,7 +64,7 @@ Examples:
 
     # skypeid filter
     valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    filename_filter  = string.maketrans(
+    filename_filter = string.maketrans(
         valid_filename_chars, ' ' * len(valid_filename_chars)
     )
 
@@ -73,7 +75,8 @@ Examples:
         reader.load(f)
         chats = reader.read()
         for c in chats:
-            conv = SkypeLog.converter.EmailConverter(chat=c, locale=options.locale)
+            conv = SkypeLog.converter.EmailConverter(
+                chat=c, locale=options.locale)
             participants = []
             for p in c.participants:
                 p_ = str(p["skypeid"])
@@ -88,10 +91,11 @@ Examples:
                 output_file_prefix = u"skypelog-%s-" % chat_participants
                 output_file_prefix = output_file_prefix.encode("utf-8")
                 output_file = tempfile.NamedTemporaryFile(dir=output_dir,
-                                prefix=output_file_prefix,
-                                suffix=".eml", delete=False)
+                                                          prefix=output_file_prefix,
+                                                          suffix=".eml", delete=False)
                 conv.write(output_file)
                 output_file.close()
+
 
 if __name__ == "__main__":
     main()
