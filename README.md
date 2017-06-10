@@ -107,4 +107,4 @@ Copyright and License
 
 (C)2013-2017 WATANABE Takuma <takumaw@sfo.kuramae.ne.jp>
 
-This software is released under GPL v2 as provided in `GPL-2.0.txt`.
+This software is released under GPL v2 as provided in `LICENSE.txt`.
